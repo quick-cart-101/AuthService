@@ -48,7 +48,7 @@ QuickCart AuthService is a Spring Boot-based authentication and authorization se
 
 ### User Registration
 
-- **URL:** `/auth/signup`
+- **URL:** `/api/auth/signup`
 - **Method:** `POST`
 - **Request Body:**
     ```json
@@ -73,7 +73,7 @@ QuickCart AuthService is a Spring Boot-based authentication and authorization se
 
 ### User Login
 
-- **URL:** `/auth/login`
+- **URL:** `/api/auth/login`
 - **Method:** `POST`
 - **Request Body:**
     ```json
@@ -85,28 +85,77 @@ QuickCart AuthService is a Spring Boot-based authentication and authorization se
 - **Response:**
     ```json
     {
-        "id": "user-id",
-        "email": "user@example.com",
-        "roles": ["ROLE_USER"]
-    }
-    ```
-- **Headers:**
-    - `Set-Cookie`: JWT token
-
-### Validate Token
-
-- **URL:** `/auth/validate`
-- **Method:** `POST`
-- **Request Body:**
-    ```json
-    {
         "token": "jwt-token",
-        "userId": "user-id"
+        "status": "ACTIVE"
     }
     ```
+
+### User Logout
+
+- **URL:** `/api/auth/logout`
+- **Method:** `POST`
+- **Headers:**
+    - `Authorization`: Bearer token
 - **Response:**
     ```json
-    true
+    "Logged out successfully"
+    ```
+
+### Get Current User
+
+- **URL:** `/api/auth/current-user`
+- **Method:** `GET`
+- **Headers:**
+    - `Authorization`: Bearer token
+- **Response:**
+    ```json
+    {
+        "id": "user-id",
+        "email": "user@example.com",
+        "fullName": "John Doe",
+        "address": "123 Main St",
+        "contactNumber": "1234567890"
+    }
+    ```
+
+### Refresh Token
+
+- **URL:** `/api/auth/refresh`
+- **Method:** `POST`
+- **Request Body:**
+    - `refreshToken`: refresh token
+- **Response:**
+    ```json
+    {
+        "token": "new-jwt-token",
+        "status": "ACTIVE"
+    }
+    ```
+
+### Get All Users (Admin only)
+
+- **URL:** `/api/auth/users`
+- **Method:** `GET`
+- **Response:**
+    ```json
+    [
+        {
+            "id": "user-id",
+            "email": "user@example.com",
+            "fullName": "John Doe",
+            "address": "123 Main St",
+            "contactNumber": "1234567890"
+        }
+    ]
+    ```
+
+### Delete User (Admin only)
+
+- **URL:** `/api/auth/users/{id}`
+- **Method:** `DELETE`
+- **Response:**
+    ```json
+    "User deleted successfully"
     ```
 
 ## Configuration
