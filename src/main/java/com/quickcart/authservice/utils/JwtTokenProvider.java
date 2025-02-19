@@ -1,4 +1,4 @@
-package com.quickcart.authservice.services.impl;
+package com.quickcart.authservice.utils;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

@@ -11,6 +11,7 @@ import com.quickcart.authservice.models.User;
 import com.quickcart.authservice.repositories.SessionRepository;
 import com.quickcart.authservice.repositories.UserRepository;
 import com.quickcart.authservice.services.AuthService;
+import com.quickcart.authservice.utils.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

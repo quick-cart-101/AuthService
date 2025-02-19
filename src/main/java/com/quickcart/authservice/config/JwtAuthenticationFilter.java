@@ -1,6 +1,6 @@
 package com.quickcart.authservice.config;
 
-import com.quickcart.authservice.services.impl.JwtTokenProvider;
+import com.quickcart.authservice.utils.JwtTokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

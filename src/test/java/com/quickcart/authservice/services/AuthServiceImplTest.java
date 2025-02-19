@@ -12,7 +12,7 @@ import com.quickcart.authservice.models.User;
 import com.quickcart.authservice.repositories.SessionRepository;
 import com.quickcart.authservice.repositories.UserRepository;
 import com.quickcart.authservice.services.impl.AuthServiceImpl;
-import com.quickcart.authservice.services.impl.JwtTokenProvider;
+import com.quickcart.authservice.utils.JwtTokenProvider;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
