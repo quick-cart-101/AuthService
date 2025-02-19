@@ -8,7 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.example.quickcart.utils.Constants.ROLE_PREFIX;
+import static com.quickcart.authservice.utils.Constants.ROLE_PREFIX;
+
 
 @Service
 @RequiredArgsConstructor
