@@ -1,11 +1,6 @@
-package com.example.quickcart.utils;
+package com.quickcart.authservice.utils;
 
 public class Constants {
 
-    public static final String QUICK_CART = "QUICK_CART";
-    public static final String IAT = "iat";
-    public static final String EXP = "exp";
-    public static final String USER_ID = "userId";
-    public static final String ISS = "iss";
-    public static final String SCOPE = "scope";
+    public static final String ROLE_PREFIX = "ROLE_";
 }

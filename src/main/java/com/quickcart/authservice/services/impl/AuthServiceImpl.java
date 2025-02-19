@@ -1,146 +1,133 @@
-package com.example.quickcart.services.impl;
+package com.quickcart.authservice.services.impl;
 
-import com.example.quickcart.dto.SignUpRequestDto;
-import com.example.quickcart.dto.SignUpResponseDto;
-import com.example.quickcart.exceptions.InvalidTokenException;
-import com.example.quickcart.exceptions.UserAlreadyExistsException;
-import com.example.quickcart.exceptions.UserNotRegisteredException;
-import com.example.quickcart.models.STATUS;
-import com.example.quickcart.models.Session;
-import com.example.quickcart.models.User;
-import com.example.quickcart.repositories.SessionRepository;
-import com.example.quickcart.repositories.UserRepository;
-import com.example.quickcart.services.AuthService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtParser;
-import io.jsonwebtoken.Jwts;
-import org.antlr.v4.runtime.misc.Pair;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import com.quickcart.authservice.dto.LoginRequestDto;
+import com.quickcart.authservice.dto.SessionDto;
+import com.quickcart.authservice.dto.SignUpRequestDto;
+import com.quickcart.authservice.exceptions.InvalidUserDetailsException;
+import com.quickcart.authservice.exceptions.UserNotRegisteredException;
+import com.quickcart.authservice.models.Session;
+import com.quickcart.authservice.models.Status;
+import com.quickcart.authservice.models.User;
+import com.quickcart.authservice.repositories.SessionRepository;
+import com.quickcart.authservice.repositories.UserRepository;
+import com.quickcart.authservice.services.AuthService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.crypto.SecretKey;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.quickcart.utils.Constants.EXP;
-import static com.example.quickcart.utils.Constants.IAT;
-import static com.example.quickcart.utils.Constants.ISS;
-import static com.example.quickcart.utils.Constants.QUICK_CART;
-import static com.example.quickcart.utils.Constants.SCOPE;
-import static com.example.quickcart.utils.Constants.USER_ID;
-
 @Service
+@RequiredArgsConstructor
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final SecretKey secretKey;
     private final SessionRepository sessionRepository;
-
-    public AuthServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder, SecretKey secretKey, SessionRepository sessionRepository) {
-        this.userRepository = userRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-
-        this.secretKey = secretKey;
-        this.sessionRepository = sessionRepository;
-    }
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public SignUpResponseDto signUp(SignUpRequestDto signUpRequest) {
-        validate(signUpRequest);
-        User user = mapSignUpRequestDtoToUser(signUpRequest);
-        User savedUser = userRepository.save(user);
-        return mapUserToSignUpRequestDto(savedUser);
-    }
-
-    @Override
-    public Pair<User, String> login(String email, String password) {
-        Optional<User> userByEmail = userRepository.findUserByEmail(email);
-        if (userByEmail.isEmpty()) {
-            throw new UserNotRegisteredException("User not registered with email: " + email);
-        }
-        User user = userByEmail.get();
-        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new BadCredentialsException("Invalid password for email: " + email);
+    public User signUp(SignUpRequestDto signUpRequestDto) throws UserNotRegisteredException {
+        if (userRepository.findByEmail(signUpRequestDto.getEmail()).isPresent()) {
+            log.error("User is not found with email: {}", signUpRequestDto.getEmail());
+            throw new UserNotRegisteredException("Email is already in use");
         }
 
-        Map<String, Object> payload = new HashMap<>();
-        long nowInMillis = System.currentTimeMillis();
-        payload.put(IAT, nowInMillis);
-        payload.put(EXP, nowInMillis + 100000);
-        payload.put(USER_ID, user.getId());
-        payload.put(ISS, QUICK_CART);
-        payload.put(SCOPE,
-                user.getRoles());
-
-        String token = Jwts.builder().claims(payload).signWith(secretKey).compact();
-
-        Session session = new Session();
-        session.setToken(token);
-        session.setUser(user);
-        session.setStatus(STATUS.ACTIVE);
-        sessionRepository.save(session);
-
-        return new Pair<>(user, token);
-    }
-
-    @Override
-    public Boolean validate(String token, UUID userId) {
-        Optional<Session> sessionByToken = sessionRepository.findSessionByToken(token);
-        if(sessionByToken.isEmpty()) {
-            throw new InvalidTokenException("Invalid token");
-        }
-        Session session = sessionByToken.get();
-        if(session.getStatus() == STATUS.INACTIVE) {
-            return false;
-        }
-        if(session.getUser().getId().equals(userId)) {
-            throw new InvalidTokenException("Invalid token");
-        }
-        JwtParser parser = Jwts.parser().verifyWith(secretKey).build();
-        Claims payload = parser.parseSignedClaims(token).getPayload();
-
-        long exp = (long) payload.get(EXP);
-        long currentTime = System.currentTimeMillis();
-        if(exp < currentTime) {
-            session.setStatus(STATUS.INACTIVE);
-            sessionRepository.save(session);
-            return false;
-        }
-        return true;
-    }
-
-    private User mapSignUpRequestDtoToUser(SignUpRequestDto signUpRequest) {
         User user = new User();
-        user.setEmail(signUpRequest.getEmail());
-        user.setPassword(bCryptPasswordEncoder.encode(signUpRequest.getPassword()));
-        user.setAddress(signUpRequest.getAddress());
-        user.setContactNumber(signUpRequest.getContactNumber());
-        user.setName(signUpRequest.getFullName());
-        return user;
+        user.setName(signUpRequestDto.getName());
+        user.setEmail(signUpRequestDto.getEmail());
+        user.setPassword(passwordEncoder.encode(signUpRequestDto.getPassword()));
+        user.setContactNumber(signUpRequestDto.getContactNumber());
+        user.setAddress(signUpRequestDto.getAddress());
+        user.setRoles(signUpRequestDto.getRoles());
+
+        return userRepository.save(user);
     }
 
-    private void validate(SignUpRequestDto signUpRequest) {
-        Boolean isUserExistWithEmail = userRepository.existsUserByEmail(signUpRequest.getEmail());
-        if (isUserExistWithEmail) {
-            throw new UserAlreadyExistsException("User already exists with email: " + signUpRequest.getEmail());
+    @Override
+    public SessionDto authenticateUser(LoginRequestDto loginRequestDto) throws UserNotRegisteredException, InvalidUserDetailsException {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+                .orElseThrow(() -> new UserNotRegisteredException("User not registered with email: " + loginRequestDto.getEmail()));
+
+        if (!passwordEncoder.matches(loginRequestDto.getPassword(), user.getPassword())) {
+            log.info("Password is invalid for user with email: {}", user.getEmail());
+            throw new InvalidUserDetailsException("Invalid email or password");
         }
-        Boolean isUserExistWithContactNumber = userRepository.existsUserByContactNumber(signUpRequest.getContactNumber());
-        if (isUserExistWithContactNumber) {
-            throw new UserAlreadyExistsException("User already exists with contact number: " + signUpRequest.getContactNumber());
-        }
+
+        String token = jwtTokenProvider.generateToken(user.getEmail());
+        Session session = new Session();
+        session.setUser(user);
+        session.setToken(token);
+        session.setStatus(Status.ACTIVE);
+        sessionRepository.save(session);
+        log.debug("session: {} is created and saved", session);
+
+        SessionDto sessionDto = new SessionDto();
+        sessionDto.setToken(token);
+        sessionDto.setStatus(Status.ACTIVE);
+
+        return sessionDto;
     }
 
-    private SignUpResponseDto mapUserToSignUpRequestDto(User user) {
-        SignUpResponseDto signUpResponseDto = new SignUpResponseDto();
-        signUpResponseDto.setId(user.getId());
-        signUpResponseDto.setEmail(user.getEmail());
-        signUpResponseDto.setFullName(user.getName());
-        signUpResponseDto.setAddress(user.getAddress());
-        signUpResponseDto.setContactNumber(user.getContactNumber());
-        return signUpResponseDto;
+    @Override
+    @Transactional
+    public void logoutUser(String token) {
+        Optional<Session> session = sessionRepository.findByToken(token);
+        session.ifPresent(s -> {
+            s.setStatus(Status.INACTIVE);
+            log.info("User with email: {} is successfully logged out.", s.getUser().getEmail());
+            sessionRepository.save(s);
+        });
+    }
+
+    @Override
+    public User getUserFromToken(String token) {
+        if(token.startsWith("Bearer")) {
+            token = token.replace("Bearer ", StringUtils.EMPTY);
+        }
+        String email = jwtTokenProvider.getEmailFromToken(token);
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    @Override
+    public SessionDto refreshToken(String refreshToken) {
+        Optional<Session> session = sessionRepository.findByToken(refreshToken);
+
+        if (session.isEmpty() || session.get().getStatus() != Status.ACTIVE) {
+            log.info("Refresh token: {} is expired or invalid", refreshToken);
+            throw new RuntimeException("Invalid or expired refresh token");
+        }
+
+        String newToken = jwtTokenProvider.generateToken(session.get().getUser().getEmail());
+
+        Session newSession = new Session();
+        newSession.setUser(session.get().getUser());
+        newSession.setToken(newToken);
+        newSession.setStatus(Status.ACTIVE);
+        log.info("New Token is generated using refresh token for user with email: {}", newSession.getUser().getEmail());
+        sessionRepository.save(newSession);
+
+        SessionDto sessionDto = new SessionDto();
+        sessionDto.setToken(newToken);
+        sessionDto.setStatus(Status.ACTIVE);
+
+        return sessionDto;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public void deleteUser(UUID userId) {
+        userRepository.deleteById(userId);
     }
 }

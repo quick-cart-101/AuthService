@@ -1,12 +1,18 @@
-package com.example.quickcart.dto;
+package com.quickcart.authservice.dto;
 
-import lombok.Data;
+import com.quickcart.authservice.models.Role;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+import java.util.Set;
+
+@Getter
+@Setter
 public class SignUpRequestDto {
-    private String fullName;
-    private String contactNumber;
-    private String password;
+    private String name;
     private String email;
+    private String password;
+    private String contactNumber;
     private String address;
+    private Set<Role> roles;
 }

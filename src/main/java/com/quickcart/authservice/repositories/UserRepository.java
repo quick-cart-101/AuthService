@@ -1,15 +1,12 @@
-package com.example.quickcart.repositories;
+package com.quickcart.authservice.repositories;
 
-import com.example.quickcart.models.User;
+import com.quickcart.authservice.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-
+import org.springframework.stereotype.Repository;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
-    Boolean existsUserByEmail(String email);
-
-    Boolean existsUserByContactNumber(String contactNumber);
-
-    Optional<User> findUserByEmail(String email);
+    Optional<User> findByEmail(String email);
 }

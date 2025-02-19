@@ -1,12 +1,12 @@
 package com.quickcart.authservice.dto;
 
-
+import com.quickcart.authservice.models.Status;
 import lombok.Getter;
 import lombok.Setter;
 
-@Setter
 @Getter
-public class ValidateTokenDto {
+@Setter
+public class SessionDto {
     private String token;
-    private Long userId;
+    private Status status;
 }
