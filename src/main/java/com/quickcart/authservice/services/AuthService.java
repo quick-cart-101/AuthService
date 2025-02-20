@@ -26,7 +26,7 @@ public interface AuthService {
      *
      * @param loginRequestDto the login request data transfer object
      * @return the session data transfer object containing the token
-     * @throws UserNotRegisteredException if the user is not registered
+     * @throws UserNotRegisteredException  if the user is not registered
      * @throws InvalidUserDetailsException if the user details are invalid
      */
     SessionDto authenticateUser(LoginRequestDto loginRequestDto) throws UserNotRegisteredException, InvalidUserDetailsException;

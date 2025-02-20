@@ -89,7 +89,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User getUserFromToken(String token) {
-        if(token.startsWith("Bearer")) {
+        if (token.startsWith("Bearer")) {
             token = token.replace("Bearer ", StringUtils.EMPTY);
         }
         String email = jwtTokenProvider.getEmailFromToken(token);

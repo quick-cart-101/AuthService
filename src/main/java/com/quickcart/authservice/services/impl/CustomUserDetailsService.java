@@ -8,8 +8,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.quickcart.authservice.utils.Constants.ROLE_PREFIX;
-
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +24,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .withUsername(user.getEmail())
                 .password(user.getPassword())
                 .authorities(user.getRoles().stream()
-                        .map(role -> ROLE_PREFIX + role.name())
+                        .map(Enum::name)
                         .toArray(String[]::new))
                 .build();
     }
