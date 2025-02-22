@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static com.quickcart.authservice.utils.Constants.ROLES;
+
 @Component
 public class JwtTokenProvider {
 
@@ -49,7 +51,7 @@ public class JwtTokenProvider {
     public String generateToken(String email) {
         Map<String, Object> claims = new HashMap<>();
         User user = userRepository.findByEmail(email).get();
-        claims.put("roles", user.getRoles());
+        claims.put(ROLES, user.getRoles());
         return createToken(claims, email);
     }
 

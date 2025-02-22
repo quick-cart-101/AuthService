@@ -11,15 +11,17 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.quickcart.authservice.utils.Constants.*;
+
 @ControllerAdvice
 public class GlobalExceptionController {
 
     private Map<String, Object> createErrorResponse(Exception ex, HttpStatus status, String error) {
         Map<String, Object> errorResponse = new HashMap<>();
-        errorResponse.put("timestamp", LocalDateTime.now());
-        errorResponse.put("status", status.value());
-        errorResponse.put("error", error);
-        errorResponse.put("message", ex.getMessage());
+        errorResponse.put(TIMESTAMP, LocalDateTime.now());
+        errorResponse.put(STATUS, status.value());
+        errorResponse.put(ERROR, error);
+        errorResponse.put(MESSAGE, ex.getMessage());
         return errorResponse;
     }
 

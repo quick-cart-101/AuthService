@@ -18,6 +18,9 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Collection;
 
+import static com.quickcart.authservice.utils.Constants.AUTHORIZATION;
+import static com.quickcart.authservice.utils.Constants.BEARER_;
+
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -48,8 +51,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getTokenFromRequest(HttpServletRequest request) {
-        String authHeader = request.getHeader("Authorization");
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        String authHeader = request.getHeader(AUTHORIZATION);
+        if (authHeader != null && authHeader.startsWith(BEARER_)) {
             return authHeader.substring(7);
         }
         return null;

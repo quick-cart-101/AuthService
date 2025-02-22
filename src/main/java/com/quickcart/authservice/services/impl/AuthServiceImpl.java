@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import static com.quickcart.authservice.utils.Constants.BEARER_;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -89,8 +91,8 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public User getUserFromToken(String token) {
-        if (token.startsWith("Bearer")) {
-            token = token.replace("Bearer ", StringUtils.EMPTY);
+        if (token.startsWith(BEARER_)) {
+            token = token.replace(BEARER_, StringUtils.EMPTY);
         }
         String email = jwtTokenProvider.getEmailFromToken(token);
         return userRepository.findByEmail(email)
