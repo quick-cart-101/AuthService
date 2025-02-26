@@ -5,7 +5,7 @@ import com.quickcart.authservice.dto.SessionDto;
 import com.quickcart.authservice.dto.SignUpRequestDto;
 import com.quickcart.authservice.exceptions.InvalidUserDetailsException;
 import com.quickcart.authservice.exceptions.UserNotRegisteredException;
-import com.quickcart.authservice.models.User;
+import com.quickcart.authservice.entities.User;
 import com.quickcart.authservice.services.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

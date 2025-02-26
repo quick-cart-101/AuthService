@@ -1,7 +1,7 @@
 package com.quickcart.authservice.repositories;
 
 
-import com.quickcart.authservice.models.Session;
+import com.quickcart.authservice.entities.Session;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

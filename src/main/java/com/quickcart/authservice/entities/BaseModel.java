@@ -1,4 +1,4 @@
-package com.quickcart.authservice.models;
+package com.quickcart.authservice.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;

@@ -1,6 +1,6 @@
 package com.quickcart.authservice.utils;
 
-import com.quickcart.authservice.models.User;
+import com.quickcart.authservice.entities.User;
 import com.quickcart.authservice.repositories.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;

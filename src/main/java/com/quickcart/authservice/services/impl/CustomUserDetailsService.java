@@ -1,6 +1,6 @@
 package com.quickcart.authservice.services.impl;
 
-import com.quickcart.authservice.models.User;
+import com.quickcart.authservice.entities.User;
 import com.quickcart.authservice.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

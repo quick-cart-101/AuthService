@@ -1,6 +1,6 @@
 package com.quickcart.authservice.dto;
 
-import com.quickcart.authservice.models.Status;
+import com.quickcart.authservice.entities.Status;
 import lombok.Getter;
 import lombok.Setter;
 

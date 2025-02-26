@@ -5,7 +5,7 @@ import com.quickcart.authservice.dto.SessionDto;
 import com.quickcart.authservice.dto.SignUpRequestDto;
 import com.quickcart.authservice.exceptions.InvalidUserDetailsException;
 import com.quickcart.authservice.exceptions.UserNotRegisteredException;
-import com.quickcart.authservice.models.User;
+import com.quickcart.authservice.entities.User;
 
 import java.util.List;
 import java.util.UUID;
