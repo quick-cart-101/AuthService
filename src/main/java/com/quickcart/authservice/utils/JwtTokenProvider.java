@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.quickcart.authservice.utils.Constants.ROLES;
+import static com.quickcart.authservice.utils.Constants.*;
 
 @Component
 public class JwtTokenProvider {
@@ -41,10 +41,10 @@ public class JwtTokenProvider {
 
     public Collection<? extends GrantedAuthority> getAuthoritiesFromToken(String token) {
         Claims claims = extractAllClaims(token);
-        List<String> roles = (List<String>) claims.get("roles");
+        List<String> roles = (List<String>) claims.get(ROLES);
 
         return roles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .map(role -> new SimpleGrantedAuthority(ROLE_ + role))
                 .collect(Collectors.toList());
     }
 
@@ -52,6 +52,7 @@ public class JwtTokenProvider {
         Map<String, Object> claims = new HashMap<>();
         User user = userRepository.findByEmail(email).get();
         claims.put(ROLES, user.getRoles());
+        claims.put(USER_ID, user.getId());
         return createToken(claims, email);
     }
 
